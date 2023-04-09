@@ -47,11 +47,12 @@ void Game::createCardStack()
 }
 
 // this function shuffles the game's cards stack
-// https://stackoverflow.com/questions/6926433/how-to-shuffle-a-stdvector refrence 
+// https://stackoverflow.com/questions/6926433/how-to-shuffle-a-stdvector refrence and chatgpt 
 void Game::shuffleCardStack()
 {
-    auto rng = default_random_engine{};
-    shuffle(this->gameStack.begin(), this->gameStack.end(), rng);
+    random_device rd;
+    mt19937 g(rd());
+    shuffle(this->gameStack.begin(), this->gameStack.end(), g);
 }
 
 // this function split evenly the game's cards stack 
@@ -73,6 +74,11 @@ void Game::splitCards()
 //this function handles a turn in game 
 void Game::playTurn()
 {
+    // check if both players has cards to play
+    if(this->player_1.stacksize() == 0 || this->player_2.stacksize() == 0)
+    {
+        return;
+    }
     if(&this->player_1 == &this->player_2)
     {
         throw logic_error(" cant play game with the same person \n");
@@ -87,6 +93,7 @@ void Game::playTurn()
         this->turnsCount++; // increament of the turn count 
         this->cardsPlayed++;    
         // clear last turn stats 
+        // this->turnInfo = "turn "+to_string(this->turnsCount)+ ": ";
         this->turnInfo = "";
 
         // get players cards 
@@ -107,6 +114,8 @@ void Game::playTurn()
            
            // increment tie count for each tie happend
            tieCount++;
+            // increment draws count for each tie happend 
+           this->drawsCount++;
            // add info about tie had happend
            this->turnInfo += " Draw. ";
            if(player_1.stacksize()== 0 && player_2.stacksize()==0) 
@@ -114,7 +123,7 @@ void Game::playTurn()
                 // increment players cards taken
                 this->player_1.cardsTakenCountAdd();
                 this->player_2.cardsTakenCountAdd();
-                break;
+                return;
            }
            else if(player_1.stacksize()== 1 && player_2.stacksize()==1) 
            {
@@ -127,7 +136,7 @@ void Game::playTurn()
                 this->player_2.removeCard();
                 this->player_2.cardsTakenCountAdd();
                 // break from while loop 
-                break; 
+                return; 
            }
             // remove folded cards of both players hands
             this->player_1.removeCard();
@@ -137,7 +146,7 @@ void Game::playTurn()
 
             // remove cards from both hands unfolded for a match 
             player1_card = this->player_1.getCard();
-            player1_card = this->player_2.getCard();
+            player2_card = this->player_2.getCard();
             // increment cardPlayed
             this->cardsPlayed++;
 
@@ -152,8 +161,6 @@ void Game::playTurn()
             }
             // else there is a tie again and it will enter the while loop again
         }
-        // add the number of ties add in this turn to the game draws 
-        this->drawsCount += tieCount;
 
         // case2: player1 wins 
         if(player1_card.cardCompare(player2_card)==1)
@@ -189,6 +196,7 @@ void Game::playTurn()
         }
         // add turn info to game log info 
         this->gameLogInfo+= this->turnInfo + " \n"; 
+        cout << this->turnInfo << "\n";
     }
 
     
@@ -233,17 +241,19 @@ void Game::printLog()
 }
 void Game::printStats()
 {
-    cout << "stats: \n";
+    cout << "\n******stats******\n\n";
     // player 1 stats 
     cout << this->player_1.getPlayerName() << ":\n"; // player name 
-    cout << "win rate:" << this->player_1_winsCount << "\n"; // win count 
-    cout << "cards won:" << this->player_1.getCardsTakenCount() << "\n"; // cards won
+    cout << "win rate: " << this->player_1_winsCount << "\n"; // win count 
+    cout << "cards won: " << this->player_1.getCardsTakenCount() << "\n\n"; // cards won
     // player 2 stats 
     cout << this->player_2.getPlayerName() << ":\n"; // player name
-    cout << "win rate:" << this->player_2_winsCount << "\n"; // win count
-    cout << "cards won:" << this->player_2.getCardsTakenCount() << "\n"; // cards won
+    cout << "win rate: " << this->player_2_winsCount << "\n"; // win count
+    cout << "cards won: " << this->player_2.getCardsTakenCount() << "\n\n"; // cards won
     
-    cout << "draws count: " << + this->drawsCount << " \n";
+    
+    cout << "draws count: " << this->drawsCount << " \n";
+    cout << "draws rate: " << ((double)this->drawsCount/this->turnsCount)*100 << "%\n";
 }
 
 
