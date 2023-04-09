@@ -7,7 +7,7 @@ using namespace std;
 using namespace ariel;
 
 // define constructor 
-Game::Game (Player& plr_1, Player& plr_2): player_1(plr_1), player_2(plr_2), player_1_winsCount(0), player_2_winsCount(0), turnsCount(0), turnInfo(""), gameLogInfo(""), gameStatus(true), cardsPlayed(0)
+Game::Game (Player& plr_1, Player& plr_2): player_1(plr_1), player_2(plr_2), player_1_winsCount(0), player_2_winsCount(0), turnsCount(0), turnInfo(""), gameLogInfo(""), gameStatus(true), cardsPlayed(0), drawsCount(0)
 {
     // check if the players are free to play else throw exception
     if(player_1.isPlaying())
@@ -77,16 +77,11 @@ void Game::playTurn()
     // check if both players has cards to play
     if(this->player_1.stacksize() == 0 || this->player_2.stacksize() == 0)
     {
-        return;
+        throw logic_error("cant play turn when game is over \n");
     }
     if(&this->player_1 == &this->player_2)
     {
         throw logic_error(" cant play game with the same person \n");
-    }
-
-    if (this->cardsPlayed >= 26)
-    {
-        throw logic_error("cant play turn when game is over \n");
     }
     if(this->cardsPlayed<26) // a game can't be played more than 26 turns 
     {
@@ -195,8 +190,8 @@ void Game::playTurn()
             this->turnInfo+= this->player_2.getPlayerName() + " wins.";
         }
         // add turn info to game log info 
+        this->turnInfo += "p1 count: " + to_string(this->player_1.stacksize()) + "  p2 count: " + to_string(this->player_2.stacksize())+"\n";
         this->gameLogInfo+= this->turnInfo + " \n"; 
-        cout << this->turnInfo << "\n";
     }
 
     
@@ -208,7 +203,7 @@ void Game::printLastTurn()
 // function that play the whole turns till game is finished 
 void Game::playAll()
 {
-    while (this->cardsPlayed<26)
+    while (this->player_1.stacksize()>0&& this->player_2.stacksize()>0)
     {
         this->playTurn();
     }
@@ -254,6 +249,9 @@ void Game::printStats()
     
     cout << "draws count: " << this->drawsCount << " \n";
     cout << "draws rate: " << ((double)this->drawsCount/this->turnsCount)*100 << "%\n";
+    cout << this->drawsCount << "\n";
+    cout << this->turnsCount << "\n";
+
 }
 
 
