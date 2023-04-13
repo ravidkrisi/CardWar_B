@@ -118,6 +118,9 @@ void Game::playTurn()
                 // increment players cards taken
                 this->player_1.cardsTakenCountAdd();
                 this->player_2.cardsTakenCountAdd();
+                // log out players from game 
+                this->player_1.setPlayerStatus(false);
+                this->player_2.setPlayerStatus(false);
                 return;
            }
            else if(player_1.stacksize()== 1 && player_2.stacksize()==1) 
@@ -131,6 +134,9 @@ void Game::playTurn()
                 this->player_2.removeCard();
                 this->player_2.cardsTakenCountAdd();
                 // break from while loop 
+                // log out players from game 
+                this->player_1.setPlayerStatus(false);
+                this->player_2.setPlayerStatus(false);
                 return; 
            }
             // remove folded cards of both players hands
@@ -192,6 +198,13 @@ void Game::playTurn()
         // add turn info to game log info 
         this->turnInfo += "p1 count: " + to_string(this->player_1.stacksize()) + "  p2 count: " + to_string(this->player_2.stacksize())+"\n";
         this->gameLogInfo+= this->turnInfo + " \n"; 
+
+        if(this->player_1.stacksize()==0 && this->player_2.stacksize()==0)
+        {
+            // log out players from game 
+            this->player_1.setPlayerStatus(false);
+            this->player_2.setPlayerStatus(false);
+        }
     }
 
     
