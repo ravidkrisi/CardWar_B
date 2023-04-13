@@ -17,9 +17,6 @@ namespace ariel {
         public:
             // declare constructor and deconstructor
             Card(CardSign sign, CardValue value); // constructor
-            // declare set get functions 
-            // void setSign(int sign);
-            // void setValue(int value);
             CardSign getCardSign() const; // return the sign of the card
             CardValue getCardValue() const; // return the value of the card
             int cardCompare(Card other); // this functions compare cards value 
